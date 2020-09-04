@@ -1,1 +1,5 @@
-# Creating-a-hybrid-and-multi-cloud-strategy-using-Azure-API-Management
+# Creating a hybrid and multi-cloud strategy using Azure API Management
+
+Many of us are migrating to the cloud, however this transition will take time. So how do we manage and monitor our on-premises services and APIs during this migration? And what if we can never move them to the cloud, either due to technical, procedural or security reasons? Maybe we even want to have a multi-cloud strategy, bringing together the best from all different providers. How can we ensure they are still brought under governance, in a secure manner, and adhering to the policies we want?
+
+This is where Azure API Management comes in, allowing us to create a vibrant API ecosystem, not matter where our services live. In this session we will dive into the options to manage our APIs in Azure, on-premises in a hybrid environment, on the edge with our devices, or at any other provider in a multi-cloud scenario, all with one seamless experience. Expect a deep-dive into API Management's self-hosted gateway, with best-practices, demos and lessons learned from the field.
