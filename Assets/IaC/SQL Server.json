@@ -1,0 +1,123 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the SQL Server."
+            },
+            "defaultValue":"sql-hybrid-multi-cloud-strategy"
+        },
+        "syncAgentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Sync Agent."
+            },
+            "defaultValue":"sa-hybrid-multi-cloud-strategy"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "defaultValue": "westeurope"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "administratorUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the administrator user."
+            },
+            "defaultValue": "Eldert"
+        },
+        "administratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password of the administrator user."
+            }
+        }
+    },
+    "variables": {
+        "databaseHybridMultiCloudStrategyName": "db-hybrid-multi-cloud-strategy",
+        "databaseSyncMetadataName": "db-sg-hybrid-multi-cloud-strategy-sync-metadata"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('sqlServerName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('administratorUsername')]",
+                "administratorLoginPassword":"[parameters('administratorPassword')]"
+            }
+        },{
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('sqlServerName'), '/', variables('databaseHybridMultiCloudStrategyName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+            ],
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('sqlServerName'), '/', variables('databaseSyncMetadataName'))]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "kind": "v12.0,user",
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/syncAgents",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[concat(parameters('sqlServerName'), '/', parameters('syncAgentName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]",
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), variables('databaseSyncMetadataName'))]"
+            ],
+            "properties": {
+                "syncDatabaseId": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), variables('databaseSyncMetadataName'))]"
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

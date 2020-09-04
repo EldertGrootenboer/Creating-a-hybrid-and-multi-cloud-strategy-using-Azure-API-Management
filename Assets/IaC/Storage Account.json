@@ -1,0 +1,58 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            },
+            "defaultValue": "sahybridmulticloud"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "defaultValue": "westeurope"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Allow"
+                },
+                "accessTier": "Hot"
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

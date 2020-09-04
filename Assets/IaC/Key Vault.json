@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            },
+            "defaultValue": "kv-hybrid-multi-cloud"
+        },
+        "functionAppName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Function App for which we want to retieve the function key."
+            },
+            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+        },
+        "apiManagementInstanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the API Management instance which should get rights to retrieve secrets."
+            },
+            "defaultValue": "apim-hybrid-multi-cloud-strategy"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "defaultValue": "westeurope"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
+            },
+            "defaultValue": "57e893e0-396b-44c6-b6ae-532f44033433"
+        },
+        "apiManagementInstanceApiVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "API version used to deploy the API Management instance."
+            },
+            "defaultValue": "2019-01-01"
+        },
+        "functionAppApiVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "API version used to deploy the Function App."
+            },
+            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            },
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[parameters('tenantId')]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[parameters('tenantId')]",
+                        "objectId": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName')), parameters('apiManagementInstanceApiVersion'), 'Full').identity.tenantId]",
+                        "permissions": {
+                            "keys": [
+                            ],
+                            "secrets": [
+                                "Get"
+                            ],
+                            "certificates": [
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2016-10-01",
+            "name": "[concat(parameters('keyVaultName'), '/', parameters('functionAppName'), '-function-key')]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ],
+            "properties": {
+                "contentType": "text/plain",
+                "value": "[listkeys(concat(parameters('functionAppName'), '/host/default/'), parameters('functionAppApiVersion')).functionKeys.apimanagement]"
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

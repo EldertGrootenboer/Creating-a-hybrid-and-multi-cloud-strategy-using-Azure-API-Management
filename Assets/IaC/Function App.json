@@ -1,0 +1,105 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverFarmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the server farm."
+            },
+            "defaultValue": "sf-fa-hybrid-multi-cloud-strategy"
+        },
+        "functionAppName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Function App."
+            },
+            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "defaultValue": "westeurope"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        }
+    },
+    "variables": {
+        "functionRetrieveRegistrationName": "RetrieveRegistration"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('serverFarmName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('functionAppName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]"
+            ],
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "kind": "functionapp",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]",
+                "httpsOnly": false
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/functions",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('functionAppName'), '/', variables('functionRetrieveRegistrationName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            ],
+            "properties": {
+                "test_data": "{\"method\":\"get\",\"body\":\"\",\"queryStringParams\":[{\"name\":\"id\",\"value\":\"1\"}],\"headers\":[]}"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/host/functionKeys",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('functionAppName'), '/default/apimanagement')]",
+            "properties": {
+                "name": "api-management"
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

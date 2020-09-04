@@ -1,0 +1,923 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverFarmName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the server farm."
+            },
+            "defaultValue": "sf-fa-hybrid-multi-cloud-strategy-1"
+        },
+        "functionAppName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Function App."
+            },
+            "defaultValue": "fa-hybrid-multi-cloud-strategy-1"
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            },
+            "defaultValue": "sahybridmulticloud1"
+        },
+        "sqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the SQL Server."
+            },
+            "defaultValue": "sql-hybrid-multi-cloud-strategy-1"
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            },
+            "defaultValue": "kv-hybrid-multi-cloud-1"
+        },
+        "apiManagementInstanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the API Management instance which should get rights to retrieve secrets."
+            },
+            "defaultValue": "apim-hybrid-multi-cloud-strategy-1"
+        },
+        "applicationInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "defaultValue": "ai-hybrid-multi-cloud-strategy-1"
+        },
+        "virtualMachineName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "defaultValue": "vm-hybrid-1"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "defaultValue": "westeurope"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "administratorUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the administrator user."
+            },
+            "defaultValue": "Eldert"
+        },
+        "administratorPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password of the administrator user."
+            }
+        },
+        "adminEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Email used for the administrator."
+            },
+            "defaultValue": "me@domain.com"
+        },
+        "tenantId": {
+            "type": "string",
+            "metadata": {
+                "description": "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
+            },
+            "defaultValue": "57e893e0-396b-44c6-b6ae-532f44033433"
+        },
+        "apiManagementInstanceApiVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "API version used to deploy the API Management instance."
+            },
+            "defaultValue": "2019-01-01"
+        },
+        "applicationInsightsApiVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "API version used to deploy the Application Insights instance."
+            },
+            "defaultValue": "2015-05-01"
+        },
+        "networkInterfaceName": {
+            "type": "string",
+            "defaultValue": "vm-hybrid-1-866"
+        },
+        "networkSecurityGroupName": {
+            "type": "string",
+            "defaultValue": "vm-hybrid-1-nsg"
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "defaultValue": "rg-demo-azureday-poland-1-vnet"
+        },
+        "publicIpAddressName": {
+            "type": "string",
+            "defaultValue": "vm-hybrid-1-ip"
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "Eldert"
+        },
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "frontDoorName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the frontdoor resource."
+            },
+            "defaultValue": "fd-hybrid-multi-cloud-strategy"
+        }
+    },
+    "variables": {
+        "databaseHybridMultiCloudStrategyName": "db-hybrid-multi-cloud-strategy",
+        "databaseSyncMetadataName": "db-sg-hybrid-multi-cloud-strategy-sync-metadata",
+        "raiDemoApiName": "rai-demo",
+        "raiDemoApiDisplayName": "RAI Demo",
+        "createRegistrationOperationName": "create-registration",
+        "healthProbeApiName": "health-probe",
+        "healthProbeApiDisplayName": "Health Probe",
+        "statusOperationName": "status",
+        "testFunctionOperationName": "test-function",
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/default')]",
+        "healthProbeSettingName": "[concat('healthProbeSettings-', uniqueString(parameters('frontDoorName')))]",
+        "loadBalancingSettingName": "[concat('loadBalancingSettings-', uniqueString(parameters('frontDoorName')))]",
+        "frontendEndpointName": "[concat(parameters('frontDoorName'), '-azurefd-net')]",
+        "frontendEndpointHostName": "[concat(parameters('frontDoorName'), '.azurefd.net')]",
+        "backendPoolName": "[concat('bp-', parameters('frontDoorName'))]",
+        "routingRuleName": "[concat('rr-', parameters('frontDoorName'), '-default')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+            "name": "[parameters('serverFarmName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('functionAppName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]"
+            ],
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "kind": "functionapp",
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]",
+                "httpsOnly": false
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Allow"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[parameters('sqlServerName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('administratorUsername')]",
+                "administratorLoginPassword": "[parameters('administratorPassword')]"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('sqlServerName'), '/', variables('databaseHybridMultiCloudStrategyName'))]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+            ],
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers/databases",
+            "apiVersion": "2019-06-01-preview",
+            "name": "[concat(parameters('sqlServerName'), '/', variables('databaseSyncMetadataName'))]",
+            "location": "westeurope",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+            ],
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic",
+                "capacity": 5
+            },
+            "kind": "v12.0,user",
+            "properties": {
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2016-10-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            },
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "Standard"
+                },
+                "tenantId": "[parameters('tenantId')]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[parameters('tenantId')]",
+                        "objectId": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName')), parameters('apiManagementInstanceApiVersion'), 'Full').identity.tenantId]",
+                        "permissions": {
+                            "keys": [
+                            ],
+                            "secrets": [
+                                "Get"
+                            ],
+                            "certificates": [
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[parameters('applicationInsightsName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service",
+            "apiVersion": "2019-01-01",
+            "name": "[parameters('apiManagementInstanceName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Demo": "Self Hosted Gateway",
+                "CreationDate": "[parameters('creationDate')]",
+                "Purpose": "Demo",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management"
+            },
+            "sku": {
+                "name": "Developer",
+                "capacity": 1
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "publisherEmail": "[parameters('adminEmail')]",
+                "publisherName": "EPH"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('raiDemoApiName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "displayName": "[variables('raiDemoApiDisplayName')]",
+                "apiRevision": "1",
+                "subscriptionRequired": true,
+                "serviceUrl": "https://httpbin.org/",
+                "path": "[variables('raiDemoApiName')]",
+                "protocols": [
+                    "http",
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('raiDemoApiName'), '/', variables('createRegistrationOperationName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('raiDemoApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "displayName": "Create Registration",
+                "method": "POST",
+                "urlTemplate": "/registration",
+                "templateParameters": [
+                ],
+                "responses": [
+                    {
+                        "statusCode": 202,
+                        "representations": [
+                        ],
+                        "headers": [
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('raiDemoApiName'), '/', variables('testFunctionOperationName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('raiDemoApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "displayName": "Retrieve Registration",
+                "method": "GET",
+                "urlTemplate": "/registrations",
+                "templateParameters": [
+                ],
+                "request": {
+                    "queryParameters": [
+                        {
+                            "name": "id",
+                            "type": "string",
+                            "required": true,
+                            "values": [
+                            ]
+                        }
+                    ],
+                    "headers": [
+                    ],
+                    "representations": [
+                    ]
+                },
+                "responses": [
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('raiDemoApiName'), '/', variables('createRegistrationOperationName'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementInstanceName'), variables('raiDemoApiName'), variables('createRegistrationOperationName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('raiDemoApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "value": "[concat('<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <mock-response status-code=\"202\" content-type=\"application/json\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>')]",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('raiDemoApiName'), '/', variables('testFunctionOperationName'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementInstanceName'), variables('raiDemoApiName'), variables('testFunctionOperationName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('raiDemoApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "value": "[concat('<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <choose>\r\n      <when condition=\"@(context.Request.Headers.GetValueOrDefault(&quot;Host&quot;, &quot;UNKNOWN&quot;).Equals(&quot;', parameters('virtualMachineName'), '.', parameters('location'), '.cloudapp.azure.com&quot;))\">\r\n        <!-- Set backend to Docker container -->\r\n        <set-backend-service base-url=\"http://RetrieveRegistrationFunction\" />\r\n      </when>\r\n      <otherwise>\r\n        <!-- Set backend to Azure Function -->\r\n        <set-backend-service base-url=\"https://', parameters('functionAppName') , '.azurewebsites.net\" />\r\n        <!-- Retrieve Function Key from Key Vault -->\r\n        <send-request ignore-error=\"false\" timeout=\"20\" response-variable-name=\"passwordResponse\" mode=\"new\">\r\n          <set-url>https://', parameters('keyVaultName'), '.vault.azure.net/secrets/', parameters('functionAppName'), '-function-key/?api-version=7.0</set-url>\r\n          <set-method>GET</set-method>\r\n          <authentication-managed-identity resource=\"https://vault.azure.net\" />\r\n        </send-request>\r\n        <!-- Set Function Key -->\r\n        <set-header name=\"x-functions-key\" exists-action=\"override\">\r\n          <value>@{ var secret = ((IResponse)context.Variables[\"passwordResponse\"]).Body.As&lt;JObject&gt;(); return secret[\"value\"].ToString(); }</value>\r\n        </set-header>\r\n      </otherwise>\r\n    </choose>\r\n    <!-- Set uri for either -->\r\n    <rewrite-uri template=\"/api/RetrieveRegistration\" copy-unmatched-params=\"true\" />\r\n    <!-- Apply additional policies -->\r\n    <rate-limit-by-key calls=\"10\" renewal-period=\"60\" counter-key=\"@(context.Request.IpAddress)\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>')]",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('healthProbeApiName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "displayName": "[variables('healthProbeApiDisplayName')]",
+                "apiRevision": "1",
+                "subscriptionRequired": false,
+                "path": "[variables('healthProbeApiName')]",
+                "protocols": [
+                    "http",
+                    "https"
+                ],
+                "isCurrent": true
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('healthProbeApiName'), '/', variables('statusOperationName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('healthProbeApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "displayName": "Status",
+                "method": "GET",
+                "urlTemplate": "[concat('/', variables('statusOperationName'))]",
+                "templateParameters": [],
+                "responses": [
+                    {
+                        "statusCode": 200,
+                        "representations": [],
+                        "headers": []
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', variables('healthProbeApiName'), '/', variables('statusOperationName'), '/policy')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('apiManagementInstanceName'), variables('healthProbeApiName'), variables('statusOperationName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apiManagementInstanceName'), variables('healthProbeApiName'))]",
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
+            ],
+            "properties": {
+                "value": "<!--\r\n    IMPORTANT:\r\n    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.\r\n    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.\r\n    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.\r\n    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.\r\n    - To remove a policy, delete the corresponding policy statement from the policy document.\r\n    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.\r\n    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.\r\n    - Policies are applied in the order of their appearance, from the top down.\r\n    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.\r\n-->\r\n<policies>\r\n  <inbound>\r\n    <base />\r\n    <mock-response status-code=\"200\" />\r\n  </inbound>\r\n  <backend>\r\n    <base />\r\n  </backend>\r\n  <outbound>\r\n    <base />\r\n  </outbound>\r\n  <on-error>\r\n    <base />\r\n  </on-error>\r\n</policies>",
+                "format": "xml"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/loggers",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/', parameters('applicationInsightsName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]",
+                "[resourceId('microsoft.insights/components', parameters('applicationInsightsName'))]"
+            ],
+            "properties": {
+                "loggerType": "applicationInsights",
+                "credentials": {
+                    "instrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), parameters('applicationInsightsApiVersion')).InstrumentationKey]"
+                },
+                "resourceId": "[resourceId('microsoft.insights/components', parameters('applicationInsightsName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.ApiManagement/service/diagnostics",
+            "apiVersion": "2019-01-01",
+            "name": "[concat(parameters('apiManagementInstanceName'), '/applicationinsights')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]",
+                "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apiManagementInstanceName'), parameters('applicationInsightsName'))]"
+            ],
+            "properties": {
+                "alwaysLog": "allErrors",
+                "loggerId": "[resourceId('Microsoft.ApiManagement/service/loggers', parameters('apiManagementInstanceName'), parameters('applicationInsightsName'))]",
+                "sampling": {
+                    "samplingType": "fixed",
+                    "percentage": 100
+                }
+            }
+        },
+        {
+            "name": "[parameters('networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups/', parameters('networkSecurityGroupName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+                "[resourceId('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "name": "[parameters('networkSecurityGroupName')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "RDP",
+                        "properties": {
+                            "priority": 300,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "3389"
+                        }
+                    },
+                    {
+                        "name": "HTTPS",
+                        "properties": {
+                            "priority": 320,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "443"
+                        }
+                    },
+                    {
+                        "name": "HTTP",
+                        "properties": {
+                            "priority": 340,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "80"
+                        }
+                    },
+                    {
+                        "name": "SSH",
+                        "properties": {
+                            "priority": 360,
+                            "protocol": "TCP",
+                            "access": "Allow",
+                            "direction": "Inbound",
+                            "sourceAddressPrefix": "*",
+                            "sourcePortRange": "*",
+                            "destinationAddressPrefix": "*",
+                            "destinationPortRange": "22"
+                        }
+                    }
+                ]
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "name": "[parameters('virtualNetworkName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-09-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": ["10.0.1.0/24"]
+                },
+                "subnets": [
+                {
+                    "name": "default",
+                    "properties": {
+                        "addressPrefix": "10.0.1.0/24"
+                    }
+                }
+            ]
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "name": "[parameters('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIpAllocationMethod": "Dynamic"
+            },
+            "sku": {
+                "name": "Basic"
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "name": "[parameters('virtualMachineName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D2_v3"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "19h2-pro",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVmAgent": true
+                    }
+                },
+                "licenseType": "Windows_Client",
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/')]"
+                    }
+                }
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
+            "type": "Microsoft.DevTestLab/schedules",
+            "apiVersion": "2017-04-26-preview",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ],
+            "properties": {
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "19:00"
+                },
+                "timeZoneId": "W. Europe Standard Time",
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "notificationLocale": "en",
+                    "timeInMinutes": "30"
+                }
+            },
+            "tags": {
+                "Conference": "AzureDay Poland",
+                "CreationDate": "27-02-2020",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            }
+        },
+        {
+            "apiVersion": "2020-01-01",
+            "type": "Microsoft.Network/frontdoors",
+            "name": "[parameters('frontDoorName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]",
+                "[resourceId('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
+            ],
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "properties": {
+                "friendlyName": "[parameters('frontDoorName')]",
+                "enabledState": "Enabled",
+                "healthProbeSettings": [
+                    {
+                        "name": "[variables('healthProbeSettingName')]",
+                        "properties": {
+                            "path": "/health-probe/status",
+                            "protocol": "Http",
+                            "intervalInSeconds": 10,
+                            "healthProbeMethod": "Get",
+                            "enabledState": "Enabled"
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/healthProbeSettings/', variables('healthProbeSettingName'))]"
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "[variables('loadBalancingSettingName')]",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2,
+                            "additionalLatencyMilliseconds": 0
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/loadBalancingSettings/', variables('loadBalancingSettingName'))]"
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "[variables('frontendEndpointName')]",
+                        "properties": {
+                            "hostName": "[variables('frontendEndpointHostName')]",
+                            "sessionAffinityEnabledState": "Disabled",
+                            "sessionAffinityTtlSeconds": 0,
+                            "webApplicationFirewallPolicyLink": null,
+                            "customHttpsConfiguration": null
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/frontendEndpoints/', variables('frontendEndpointName'))]"
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "[variables('backendPoolName')]",
+                        "properties": {
+                            "backends": [
+                                {
+                                    "address": "[concat(parameters('apiManagementInstanceName'), '.azure-api.net')]",
+                                    "enabledState": "Enabled",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "priority": 1,
+                                    "weight": 50,
+                                    "backendHostHeader": "[concat(parameters('apiManagementInstanceName'), '.azure-api.net')]"
+                                },
+                                {
+                                    "address": "[concat(parameters('virtualMachineName'), '.westeurope.cloudapp.azure.com')]",
+                                    "enabledState": "Enabled",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "priority": 5,
+                                    "weight": 50,
+                                    "backendHostHeader": "[concat(parameters('virtualMachineName'), '.westeurope.cloudapp.azure.com')]"
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/loadBalancingSettings/', variables('loadBalancingSettingName'))]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/healthProbeSettings/', variables('healthProbeSettingName'))]"
+                            }
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/backendPools/', variables('backendPoolName'))]"
+                    }
+                ],
+                "routingRules": [
+                    {
+                        "name": "[variables('routingRuleName')]",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/frontendEndpoints/', variables('frontendEndpointName'))]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Http",
+                                "Https"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "enabledState": "Enabled",
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "customForwardingPath": null,
+                                "forwardingProtocol": "MatchRequest",
+                                "backendPool": {
+                                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/backendPools/', variables('backendPoolName'))]"
+                                },
+                                "cacheConfiguration": null
+                            }
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/routingRules/', variables('routingRuleName'))]"
+                    }
+                ],
+                "backendPoolsSettings": {
+                    "enforceCertificateNameCheck": "Disabled",
+                    "sendRecvTimeoutSeconds": 20
+                }
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

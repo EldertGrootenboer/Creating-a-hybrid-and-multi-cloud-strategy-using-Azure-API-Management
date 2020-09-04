@@ -1,0 +1,174 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "frontDoorName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the frontdoor resource."
+            },
+            "defaultValue": "fd-hybrid-multi-cloud-strategy"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location of the frontdoor resource."
+            },
+            "defaultValue": "global"
+        },
+        "creationDate": {
+            "type": "string",
+            "metadata": {
+                "description": "Date when the resource was deployed."
+            },
+            "defaultValue": "[utcNow()]"
+        },
+        "apiManagementInstanceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the API Management instance."
+            },
+            "defaultValue": "apim-hybrid-multi-cloud-strategy"
+        },
+        "conferenceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the conference for which we are creating the resource."
+            }
+        }
+    },
+    "variables": {
+        "healthProbeSettingName": "[concat('healthProbeSettings-', uniqueString(parameters('frontDoorName')))]",
+        "loadBalancingSettingName": "[concat('loadBalancingSettings-', uniqueString(parameters('frontDoorName')))]",
+        "frontendEndpointName": "[concat(parameters('frontDoorName'), '-azurefd-net')]",
+        "frontendEndpointHostName": "[concat(parameters('frontDoorName'), '.azurefd.net')]",
+        "backendPoolName": "[concat('bp-', parameters('frontDoorName'))]",
+        "routingRuleName": "[concat('rr-', parameters('frontDoorName'), '-default')]",
+        "conferenceNameForResources": "[replace(toLower(parameters('conferenceName')), ' ', '-')]",
+        "virtualMachineNamePrepared": "[concat('vm-hmc-', variables('conferenceNameForResources'))]",
+        "virtualMachineName": "[if(lessOrEquals(length(variables('virtualMachineNamePrepared')), 15), variables('virtualMachineNamePrepared'), substring(variables('virtualMachineNamePrepared'), 0, 15))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-01-01",
+            "type": "Microsoft.Network/frontdoors",
+            "name": "[parameters('frontDoorName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "CreationDate": "[parameters('creationDate')]",
+                "Demo": "Self Hosted Gateway",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Demo"
+            },
+            "properties": {
+                "friendlyName": "[parameters('frontDoorName')]",
+                "enabledState": "Enabled",
+                "healthProbeSettings": [
+                    {
+                        "name": "[variables('healthProbeSettingName')]",
+                        "properties": {
+                            "path": "/health-probe/status",
+                            "protocol": "Http",
+                            "intervalInSeconds": 10,
+                            "healthProbeMethod": "Get",
+                            "enabledState": "Enabled"
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/healthProbeSettings/', variables('healthProbeSettingName'))]"
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "[variables('loadBalancingSettingName')]",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2,
+                            "additionalLatencyMilliseconds": 0
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/loadBalancingSettings/', variables('loadBalancingSettingName'))]"
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "[variables('frontendEndpointName')]",
+                        "properties": {
+                            "hostName": "[variables('frontendEndpointHostName')]",
+                            "sessionAffinityEnabledState": "Disabled",
+                            "sessionAffinityTtlSeconds": 0,
+                            "webApplicationFirewallPolicyLink": null,
+                            "customHttpsConfiguration": null
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/frontendEndpoints/', variables('frontendEndpointName'))]"
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "[variables('backendPoolName')]",
+                        "properties": {
+                            "backends": [
+                                {
+                                    "address": "[concat(parameters('apiManagementInstanceName'), '.azure-api.net')]",
+                                    "enabledState": "Enabled",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "priority": 1,
+                                    "weight": 50,
+                                    "backendHostHeader": "[concat(parameters('apiManagementInstanceName'), '.azure-api.net')]"
+                                },
+                                {
+                                    "address": "[concat(variables('virtualMachineName'), '.westeurope.cloudapp.azure.com')]",
+                                    "enabledState": "Enabled",
+                                    "httpPort": 80,
+                                    "httpsPort": 443,
+                                    "priority": 5,
+                                    "weight": 50,
+                                    "backendHostHeader": "[concat(variables('virtualMachineName'), '.westeurope.cloudapp.azure.com')]"
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/loadBalancingSettings/', variables('loadBalancingSettingName'))]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/healthProbeSettings/', variables('healthProbeSettingName'))]"
+                            }
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/backendPools/', variables('backendPoolName'))]"
+                    }
+                ],
+                "routingRules": [
+                    {
+                        "name": "[variables('routingRuleName')]",
+                        "properties": {
+                            "frontendEndpoints": [
+                                {
+                                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/frontendEndpoints/', variables('frontendEndpointName'))]"
+                                }
+                            ],
+                            "acceptedProtocols": [
+                                "Http",
+                                "Https"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ],
+                            "enabledState": "Enabled",
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "customForwardingPath": null,
+                                "forwardingProtocol": "MatchRequest",
+                                "backendPool": {
+                                    "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/backendPools/', variables('backendPoolName'))]"
+                                },
+                                "cacheConfiguration": null
+                            }
+                        },
+                        "id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/frontdoors/', parameters('frontDoorName'), '/routingRules/', variables('routingRuleName'))]"
+                    }
+                ],
+                "backendPoolsSettings": {
+                    "enforceCertificateNameCheck": "Disabled",
+                    "sendRecvTimeoutSeconds": 20
+                }
+            }
+        }
+    ]
+}

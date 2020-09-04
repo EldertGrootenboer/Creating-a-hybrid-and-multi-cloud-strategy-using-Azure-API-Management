@@ -1,0 +1,44 @@
+@apiManagementUrl = apim-hybrid-multi-cloud-strategy.azure-api.net
+@virtualMachineUrl = vm-hybrid-1.westeurope.cloudapp.azure.com
+@frontDoorUrl = fd-hybrid-multi-cloud-strategy.azurefd.net
+@localhostUrl = localhost
+
+### Front Door
+GET http://{{frontDoorUrl}}/rai-demo/registrations?id=1
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
+
+### API Management
+GET https://{{apiManagementUrl}}/rai-demo/registrations?id=1
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
+
+### Self Hosted Gateway - OK
+GET http://{{virtualMachineUrl}}/rai-demo/registrations?id=1
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
+
+### Self Hosted Gateway - Missing Authentication
+GET http://{{virtualMachineUrl}}/rai-demo/registrations?id=1
+
+### Self Hosted Gateway - Invalid ID
+GET http://{{virtualMachineUrl}}/rai-demo/registrations?id=2
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
+
+### Self Hosted Gateway Local - OK
+GET http://{{localhostUrl}}/rai-demo/registrations?id=1
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
+
+### Function CheckIn
+GET http://{{localhostUrl}}:7071/api/CheckIn?id=1
+
+
+
+
+### Health Probe
+
+### Front Door
+GET http://{{frontDoorUrl}}/health-probe/status
+
+### API Management
+GET https://{{apiManagementUrl}}/health-probe/status
+
+### Self Hosted Gateway
+GET http://{{virtualMachineUrl}}/health-probe/status
