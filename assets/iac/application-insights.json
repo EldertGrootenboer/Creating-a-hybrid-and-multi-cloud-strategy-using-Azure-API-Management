@@ -14,7 +14,7 @@
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",

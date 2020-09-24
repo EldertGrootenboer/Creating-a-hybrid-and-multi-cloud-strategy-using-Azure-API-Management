@@ -7,28 +7,28 @@
             "metadata": {
                 "description": "Name of the Key Vault."
             },
-            "defaultValue": "kv-hybrid-multi-cloud"
+            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]"
         },
         "functionAppName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Function App for which we want to retieve the function key."
             },
-            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "apiManagementInstanceName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the API Management instance which should get rights to retrieve secrets."
             },
-            "defaultValue": "apim-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",
@@ -37,26 +37,12 @@
             },
             "defaultValue": "[utcNow()]"
         },
-        "tenantId": {
-            "type": "string",
-            "metadata": {
-                "description": "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
-            },
-            "defaultValue": "57e893e0-396b-44c6-b6ae-532f44033433"
-        },
         "apiManagementInstanceApiVersion": {
             "type": "string",
             "metadata": {
                 "description": "API version used to deploy the API Management instance."
             },
             "defaultValue": "2019-01-01"
-        },
-        "functionAppApiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "API version used to deploy the Function App."
-            },
-            "defaultValue": "fa-hybrid-multi-cloud-strategy"
         }
     },
     "variables": {
@@ -77,10 +63,10 @@
                     "family": "A",
                     "name": "Standard"
                 },
-                "tenantId": "[parameters('tenantId')]",
+                "tenantId": "[subscription().tenantId]",
                 "accessPolicies": [
                     {
-                        "tenantId": "[parameters('tenantId')]",
+                        "tenantId": "[subscription().tenantId]",
                         "objectId": "[reference(resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName')), parameters('apiManagementInstanceApiVersion'), 'Full').identity.tenantId]",
                         "permissions": {
                             "keys": [
@@ -105,7 +91,7 @@
             ],
             "properties": {
                 "contentType": "text/plain",
-                "value": "[listkeys(concat(parameters('functionAppName'), '/host/default/'), parameters('functionAppApiVersion')).functionKeys.apimanagement]"
+                "value": "[listkeys(concat(parameters('functionAppName'), '/host/default/'), '2018-11-01').functionKeys.apimanagement]"
             }
         }
     ],

@@ -7,14 +7,14 @@
             "metadata": {
                 "description": "Name of the Storage Account."
             },
-            "defaultValue": "sahybridmulticloud"
+            "defaultValue": "[concat('st', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",

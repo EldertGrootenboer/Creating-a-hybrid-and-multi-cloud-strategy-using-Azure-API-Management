@@ -6,14 +6,15 @@
             "type": "string",
             "metadata": {
                 "description": "Name of the conference for which we are creating the resource."
-            }
+            },
+            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",

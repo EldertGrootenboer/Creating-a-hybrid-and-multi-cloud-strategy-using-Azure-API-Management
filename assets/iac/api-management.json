@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "Name of the API Management instance."
             },
-            "defaultValue": "apim-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "applicationInsightsName": {
             "type": "string",
@@ -28,14 +28,14 @@
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "keyVaultName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Key Vault."
             },
-            "defaultValue": "kv-hybrid-multi-cloud"
+            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",

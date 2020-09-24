@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "Name of the SQL Server."
             },
-            "defaultValue":"sql-hybrid-multi-cloud-strategy"
+            "defaultValue":"[concat('sql-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "syncAgentName": {
             "type": "string",
@@ -21,7 +21,7 @@
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",

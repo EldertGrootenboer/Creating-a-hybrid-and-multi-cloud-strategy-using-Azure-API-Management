@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "The name of the frontdoor resource."
             },
-            "defaultValue": "fd-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('fd-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",
@@ -28,7 +28,7 @@
             "metadata": {
                 "description": "Name of the API Management instance."
             },
-            "defaultValue": "apim-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "conferenceName": {
             "type": "string",

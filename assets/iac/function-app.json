@@ -14,14 +14,14 @@
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "fa-hybrid-multi-cloud-strategy"
+            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "westeurope"
+            "defaultValue": "[resourceGroup().location]"
         },
         "creationDate": {
             "type": "string",
