@@ -3,7 +3,7 @@
 #   2. Deploy Azure services
 
 ########## Set before deployment, do not save to repository ##########
-$sqlAdminPassword = ConvertTo-SecureString "sj2#m222nndIN82#223@1" -AsPlainText -Force
+$sqlAdminPassword = ConvertTo-SecureString "<<replace>>" -AsPlainText -Force
 ######################################################################
 
 # Update these according to the environment

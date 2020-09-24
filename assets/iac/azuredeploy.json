@@ -2,21 +2,15 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "sqlAdministratorPassword": {
+        "administratorPassword": {
             "metadata": {
-                "description": "Password of the SQL administrator user."
+                "description": "Password of the administrator users."
             },
             "type": "securestring"
         },
         "templatesBaseUri": {
             "defaultValue": "https://raw.githubusercontent.com/EldertGrootenboer/Creating-a-hybrid-and-multi-cloud-strategy-using-Azure-API-Management/master/assets/iac",
             "type": "string"
-        },
-        "vmAdministratorPassword": {
-            "metadata": {
-                "description": "Password of the VM administrator user."
-            },
-            "type": "securestring"
         }
     },
     "variables": {},
@@ -57,7 +51,7 @@
                 },
                 "parameters": {
                     "administratorPassword": {
-                        "value": "[parameters('sqlAdministratorPassword')]"
+                        "value": "[parameters('administratorPassword')]"
                     }
                 }
             }
@@ -110,7 +104,7 @@
                 },
                 "parameters": {
                     "adminPassword": {
-                        "value": "[parameters('vmAdministratorPassword')]"
+                        "value": "[parameters('administratorPassword')]"
                     }
                 }
             }
