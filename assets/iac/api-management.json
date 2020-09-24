@@ -221,7 +221,7 @@
             "properties": {
                 "loggerType": "applicationInsights",
                 "credentials": {
-                    "instrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'), parameters('applicationInsightsApiVersion'))).InstrumentationKey]"
+                    "instrumentationKey": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2015-05-01').InstrumentationKey]"
                 },
                 "resourceId": "[resourceId('microsoft.insights/components', parameters('applicationInsightsName'))]"
             }
