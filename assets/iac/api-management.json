@@ -21,7 +21,7 @@
             "metadata": {
                 "description": "Name of the Application Insights instance."
             },
-            "defaultValue": "vm-hybrid-1"
+            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]"
         },
         "functionAppName": {
             "type": "string",
@@ -215,8 +215,7 @@
             "apiVersion": "2019-01-01",
             "name": "[concat(parameters('apiManagementInstanceName'), '/', parameters('applicationInsightsName'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]",
-                "[resourceId('microsoft.insights/components', parameters('applicationInsightsName'))]"
+                "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]"
             ],
             "properties": {
                 "loggerType": "applicationInsights",
