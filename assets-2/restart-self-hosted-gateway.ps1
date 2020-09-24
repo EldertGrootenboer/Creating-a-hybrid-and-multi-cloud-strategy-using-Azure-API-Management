@@ -1,4 +1,4 @@
-cd "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\Assets"
+cd "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\assets"
 
 docker stop SelfHostedGatewayLocal
 

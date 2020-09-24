@@ -30,9 +30,9 @@ npm install -g azure-functions-core-tools
 
 func start --build
 
-docker build "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\Assets\RetrieveRegistration" -t retrieveregistration
+docker build "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\assets\retrieve-registration" -t retrieveregistration
 
-cd "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\Assets\RetrieveRegistration"
+cd "C:\Repos\Sessions\Creating a hybrid and multi-cloud strategy using Azure API Management\assets\retrieve-registration"
 
 docker run --name RetrieveRegistrationFunction --net HostedGatewayNetwork --env-file .\AWS.env retrieveregistration
 
