@@ -28,7 +28,7 @@
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "keyVaultName": {
             "type": "string",

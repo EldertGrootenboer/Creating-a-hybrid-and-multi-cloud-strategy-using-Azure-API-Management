@@ -7,14 +7,14 @@
             "metadata": {
                 "description": "Name of the server farm."
             },
-            "defaultValue": "sf-fa-hybrid-multi-cloud-strategy-1"
+            "defaultValue": "sf-func-hybrid-multi-cloud-strategy-1"
         },
         "functionAppName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "fa-hybrid-multi-cloud-strategy-1"
+            "defaultValue": "func-hybrid-multi-cloud-strategy-1"
         },
         "storageAccountName": {
             "type": "string",

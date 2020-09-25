@@ -7,7 +7,7 @@
             "metadata": {
                 "description": "Name of the server farm."
             },
-            "defaultValue": "sf-fa-hybrid-multi-cloud-strategy"
+            "defaultValue": "sf-func-hybrid-multi-cloud-strategy"
         },
         "applicationInsightsName": {
             "type": "string",
@@ -28,7 +28,7 @@
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "location": {
             "type": "string",

@@ -14,7 +14,7 @@
             "metadata": {
                 "description": "Name of the Function App for which we want to retieve the function key."
             },
-            "defaultValue": "[concat('fa-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
         },
         "apiManagementInstanceName": {
             "type": "string",
