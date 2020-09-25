@@ -65,12 +65,13 @@
             },
             "defaultValue": "westeurope"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         },
         "administratorUsername": {
             "type": "string",
@@ -170,12 +171,7 @@
             "apiVersion": "2018-02-01",
             "name": "[parameters('serverFarmName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Y1",
                 "tier": "Dynamic",
@@ -195,12 +191,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]"
             ],
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "kind": "functionapp",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]",
@@ -212,12 +203,7 @@
             "apiVersion": "2019-06-01",
             "name": "[parameters('storageAccountName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Standard_LRS"
             },
@@ -235,12 +221,7 @@
             "apiVersion": "2019-06-01-preview",
             "name": "[parameters('sqlServerName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "administratorLogin": "[parameters('administratorUsername')]",
                 "administratorLoginPassword": "[parameters('administratorPassword')]"
@@ -254,12 +235,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
             ],
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Basic",
                 "tier": "Basic",
@@ -290,11 +266,7 @@
             "apiVersion": "2016-10-01",
             "name": "[parameters('keyVaultName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Session"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "sku": {
                     "family": "A",
@@ -323,12 +295,7 @@
             "apiVersion": "2015-05-01",
             "name": "[parameters('applicationInsightsName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "kind": "web",
             "properties": {
                 "Application_Type": "web"
@@ -339,12 +306,7 @@
             "apiVersion": "2019-01-01",
             "name": "[parameters('apiManagementInstanceName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "Demo": "Self Hosted Gateway",
-                "CreationDate": "[parameters('creationDate')]",
-                "Purpose": "Demo",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Developer",
                 "capacity": 1
@@ -580,13 +542,7 @@
                     "id": "[variables('nsgId')]"
                 }
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[parameters('networkSecurityGroupName')]",
@@ -649,13 +605,7 @@
                     }
                 ]
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[parameters('virtualNetworkName')]",
@@ -675,13 +625,7 @@
                 }
             ]
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[parameters('publicIpAddressName')]",
@@ -694,13 +638,7 @@
             "sku": {
                 "name": "Basic"
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[parameters('virtualMachineName')]",
@@ -752,13 +690,7 @@
                     }
                 }
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
@@ -782,13 +714,7 @@
                     "timeInMinutes": "30"
                 }
             },
-            "tags": {
-                "Conference": "AzureDay Poland",
-                "CreationDate": "27-02-2020",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "apiVersion": "2020-01-01",
@@ -799,12 +725,7 @@
                 "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementInstanceName'))]",
                 "[resourceId('Microsoft.Compute/virtualMachines/', parameters('virtualMachineName'))]"
             ],
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "friendlyName": "[parameters('frontDoorName')]",
                 "enabledState": "Enabled",

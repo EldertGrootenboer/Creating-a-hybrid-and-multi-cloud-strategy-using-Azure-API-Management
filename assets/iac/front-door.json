@@ -16,12 +16,13 @@
             },
             "defaultValue": "global"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         },
         "apiManagementInstanceName": {
             "type": "string",
@@ -55,12 +56,7 @@
             "type": "Microsoft.Network/frontdoors",
             "name": "[parameters('frontDoorName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "friendlyName": "[parameters('frontDoorName')]",
                 "enabledState": "Enabled",

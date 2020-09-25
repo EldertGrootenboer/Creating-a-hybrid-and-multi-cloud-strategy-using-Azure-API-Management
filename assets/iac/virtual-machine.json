@@ -16,12 +16,13 @@
             },
             "defaultValue": "[resourceGroup().location]"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         },
         "adminUsername": {
             "type": "string",
@@ -52,12 +53,7 @@
             "apiVersion": "2019-06-01",
             "name": "[variables('storageAccountName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Standard_LRS"
             },
@@ -99,13 +95,7 @@
                     "id": "[variables('nsgId')]"
                 }
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[variables('networkSecurityGroupName')]",
@@ -168,13 +158,7 @@
                     }
                 ]
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[variables('virtualNetworkName')]",
@@ -196,13 +180,7 @@
                     }
                 ]
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[variables('publicIpAddressName')]",
@@ -219,13 +197,7 @@
             "sku": {
                 "name": "Basic"
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[variables('virtualMachineName')]",
@@ -278,13 +250,7 @@
                     }
                 }
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         },
         {
             "name": "[concat('shutdown-computevm-', variables('virtualMachineName'))]",
@@ -308,13 +274,7 @@
                     "timeInMinutes": "30"
                 }
             },
-            "tags": {
-                "Conference": "[parameters('conferenceName')]",
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            }
+            "tags": "[parameters('tags')]"
         }
     ]
 }

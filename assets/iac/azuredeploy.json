@@ -60,6 +60,10 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "keyVault",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'apiManagement')]",
+                "[resourceId('Microsoft.Resources/deployments', 'functionApp')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -71,7 +75,7 @@
         {
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
-            "name": "applicationInsighs",
+            "name": "applicationInsights",
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -84,6 +88,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "apiManagement",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'applicationInsights')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {

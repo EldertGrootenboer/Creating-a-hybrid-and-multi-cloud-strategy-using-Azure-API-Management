@@ -44,12 +44,13 @@
             },
             "defaultValue": "West Europe"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         },
         "adminEmail": {
             "type": "string",
@@ -57,13 +58,6 @@
                 "description": "Email used for the administrator."
             },
             "defaultValue": "me@domain.com"
-        },
-        "applicationInsightsApiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "API version used to deploy the Application Insights instance."
-            },
-            "defaultValue": "2015-05-01"
         }
     },
     "variables": {
@@ -81,12 +75,7 @@
             "apiVersion": "2019-01-01",
             "name": "[parameters('apiManagementInstanceName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "Demo": "Self Hosted Gateway",
-                "CreationDate": "[parameters('creationDate')]",
-                "Purpose": "Demo",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Developer",
                 "capacity": 1

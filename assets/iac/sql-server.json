@@ -23,12 +23,13 @@
             },
             "defaultValue": "[resourceGroup().location]"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         },
         "administratorUsername": {
             "type": "string",
@@ -54,12 +55,7 @@
             "apiVersion": "2019-06-01-preview",
             "name": "[parameters('sqlServerName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "administratorLogin": "[parameters('administratorUsername')]",
                 "administratorLoginPassword":"[parameters('administratorPassword')]"
@@ -72,12 +68,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
             ],
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Basic",
                 "tier": "Basic",

@@ -9,6 +9,20 @@
             },
             "defaultValue": "sf-fa-hybrid-multi-cloud-strategy"
         },
+        "applicationInsightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "defaultValue": "ai-hybrid-multi-cloud-strategy"
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            },
+            "defaultValue": "[concat('st', uniqueString(resourceGroup().name))]"
+        },
         "functionAppName": {
             "type": "string",
             "metadata": {
@@ -23,16 +37,17 @@
             },
             "defaultValue": "[resourceGroup().location]"
         },
-        "creationDate": {
-            "type": "string",
-            "metadata": {
-                "description": "Date when the resource was deployed."
-            },
-            "defaultValue": "[utcNow()]"
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            }
         }
     },
     "variables": {
-        "functionRetrieveRegistrationName": "RetrieveRegistration"
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
     },
     "resources": [
         {
@@ -40,21 +55,14 @@
             "apiVersion": "2018-02-01",
             "name": "[parameters('serverFarmName')]",
             "location": "[parameters('location')]",
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
+            "tags": "[parameters('tags')]",
             "sku": {
                 "name": "Y1",
-                "tier": "Dynamic",
-                "size": "Y1",
-                "family": "Y",
-                "capacity": 0
+                "tier": "Dynamic"
             },
-            "kind": "functionapp",
             "properties": {
+                "name": "[parameters('serverFarmName')]",
+                "computeMode": "Dynamic"
             }
         },
         {
@@ -62,31 +70,45 @@
             "apiVersion": "2018-11-01",
             "name": "[parameters('functionAppName')]",
             "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "kind": "functionapp",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]"
             ],
-            "tags": {
-                "CreationDate": "[parameters('creationDate')]",
-                "Demo": "Self Hosted Gateway",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Demo"
-            },
-            "kind": "functionapp",
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverFarmName'))]",
-                "httpsOnly": false
-            }
-        },
-        {
-            "type": "Microsoft.Web/sites/functions",
-            "apiVersion": "2018-11-01",
-            "name": "[concat(parameters('functionAppName'), '/', variables('functionRetrieveRegistrationName'))]",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
-            ],
-            "properties": {
-                "test_data": "{\"method\":\"get\",\"body\":\"\",\"queryStringParams\":[{\"name\":\"id\",\"value\":\"1\"}],\"headers\":[]}"
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';AccountKey=', listKeys(variables('storageAccountId'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(parameters('functionAppName'))]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~3"
+                        },
+                        {
+                            "name": "FUNCTIONS_WORKER_RUNTIME",
+                            "value": "dotnet"
+                        },
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')), '2014-04-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_RUN_FROM_PACKAGE",
+                            "value": "1"
+                        }
+                    ]
+                }
             }
         },
         {
@@ -97,9 +119,5 @@
                 "name": "api-management"
             }
         }
-    ],
-    "outputs": {
-    },
-    "functions": [
     ]
 }
