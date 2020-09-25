@@ -115,6 +115,9 @@
             "type": "Microsoft.Web/sites/host/functionKeys",
             "apiVersion": "2018-11-01",
             "name": "[concat(parameters('functionAppName'), '/default/apimanagement')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+            ],
             "properties": {
                 "name": "api-management"
             }

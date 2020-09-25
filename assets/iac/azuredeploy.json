@@ -19,6 +19,9 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "functionApp",
+            "dependsOn":[
+                "[resourceId('Microsoft.Resources/deployments', 'storageAccount')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -120,6 +123,10 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "name": "frontDoor",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'apiManagement')]",
+                "[resourceId('Microsoft.Resources/deployments', 'virtualMachine')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
