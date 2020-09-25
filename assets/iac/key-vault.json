@@ -88,7 +88,7 @@
             ],
             "properties": {
                 "contentType": "text/plain",
-                "value": "[listkeys(concat(parameters('functionAppName'), '/host/default/'), '2018-11-01').functionKeys.apimanagement]"
+                "value": "[listkeys(concat(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '/host/default/'), '2018-11-01').functionKeys.apimanagement]"
             }
         }
     ],
