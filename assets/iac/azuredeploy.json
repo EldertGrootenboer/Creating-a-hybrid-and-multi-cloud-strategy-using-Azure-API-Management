@@ -8,13 +8,6 @@
             },
             "type": "securestring"
         },
-        "syncSqlServerName": {
-            "defaultValue": "[concat('sql-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
-            "metadata": {
-                "description": "Name of the Sync SQL Server."
-            },
-            "type": "string"
-        },
         "templatesBaseUri": {
             "defaultValue": "https://raw.githubusercontent.com/EldertGrootenboer/Creating-a-hybrid-and-multi-cloud-strategy-using-Azure-API-Management/master/assets/iac",
             "type": "string"
@@ -61,9 +54,6 @@
                 "parameters": {
                     "administratorPassword": {
                         "value": "[parameters('administratorPassword')]"
-                    },
-                    "syncSqlServerName": {
-                        "value": "[parameters('syncSqlServerName')]"
                     }
                 }
             }

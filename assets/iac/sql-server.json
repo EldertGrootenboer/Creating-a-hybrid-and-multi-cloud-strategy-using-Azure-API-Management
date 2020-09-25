@@ -36,13 +36,6 @@
             },
             "type": "string"
         },
-        "syncSqlServerName": {
-            "defaultValue": "[concat('sql-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
-            "metadata": {
-                "description": "Name of the Sync SQL Server."
-            },
-            "type": "string"
-        },
         "tags": {
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
@@ -88,7 +81,7 @@
         {
             "type": "Microsoft.Sql/servers/databases",
             "apiVersion": "2019-06-01-preview",
-            "name": "[concat(parameters('syncSqlServerName'), '/', variables('databaseSyncMetadataName'))]",
+            "name": "[concat(parameters('sqlServerName'), '/', variables('databaseSyncMetadataName'))]",
             "location": "westeurope",
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
@@ -108,10 +101,10 @@
             "name": "[concat(parameters('sqlServerName'), '/', parameters('syncAgentName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]",
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('syncSqlServerName'), variables('databaseSyncMetadataName'))]"
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), variables('databaseSyncMetadataName'))]"
             ],
             "properties": {
-                "syncDatabaseId": "[resourceId('Microsoft.Sql/servers/databases', parameters('syncSqlServerName'), variables('databaseSyncMetadataName'))]"
+                "syncDatabaseId": "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), variables('databaseSyncMetadataName'))]"
             }
         }
     ]
