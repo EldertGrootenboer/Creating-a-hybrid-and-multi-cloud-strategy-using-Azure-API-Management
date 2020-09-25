@@ -2,48 +2,48 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "keyVaultName": {
-            "type": "string",
+        "apiManagementInstanceApiVersion": {
+            "defaultValue": "2019-01-01",
             "metadata": {
-                "description": "Name of the Key Vault."
+                "description": "API version used to deploy the API Management instance."
             },
-            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]"
-        },
-        "functionAppName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Function App for which we want to retieve the function key."
-            },
-            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "apiManagementInstanceName": {
-            "type": "string",
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the API Management instance which should get rights to retrieve secrets."
             },
-            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
+        },
+        "functionAppName": {
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the Function App for which we want to retieve the function key."
+            },
+            "type": "string"
+        },
+        "keyVaultName": {
+            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            },
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "[resourceGroup().location]"
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
-        },
-        "apiManagementInstanceApiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "API version used to deploy the API Management instance."
             },
-            "defaultValue": "2019-01-01"
+            "type": "object"
         }
     },
     "variables": {
@@ -91,9 +91,5 @@
                 "value": "[listkeys(concat(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '/host/default/'), '2018-11-01').functionKeys.apimanagement]"
             }
         }
-    ],
-    "outputs": {
-    },
-    "functions": [
     ]
 }

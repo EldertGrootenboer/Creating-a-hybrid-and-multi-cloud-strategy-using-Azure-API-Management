@@ -2,34 +2,34 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "adminUsername": {
+            "defaultValue": "Eldert",
+            "type": "string"
+        },
         "conferenceName": {
-            "type": "string",
+            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the conference for which we are creating the resource."
             },
-            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "[resourceGroup().location]"
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
-        },
-        "adminUsername": {
-            "type": "string",
-            "defaultValue": "Eldert"
-        },
-        "adminPassword": {
-            "type": "securestring"
+            },
+            "type": "object"
         }
     },
     "variables": {

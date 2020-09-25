@@ -2,48 +2,48 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "serverFarmName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the server farm."
-            },
-            "defaultValue": "sf-func-hybrid-multi-cloud-strategy"
-        },
         "applicationInsightsName": {
-            "type": "string",
+            "defaultValue": "ai-hybrid-multi-cloud-strategy",
             "metadata": {
                 "description": "Name of the Application Insights instance."
             },
-            "defaultValue": "ai-hybrid-multi-cloud-strategy"
-        },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Storage Account."
-            },
-            "defaultValue": "[concat('st', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "functionAppName": {
-            "type": "string",
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "[resourceGroup().location]"
+            "type": "string"
+        },
+        "serverFarmName": {
+            "defaultValue": "sf-func-hybrid-multi-cloud-strategy",
+            "metadata": {
+                "description": "Name of the server farm."
+            },
+            "type": "string"
+        },
+        "storageAccountName": {
+            "defaultValue": "[concat('st', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            },
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
+            },
+            "type": "object"
         }
     },
     "variables": {

@@ -2,62 +2,62 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "adminEmail": {
+            "defaultValue": "me@domain.com",
+            "metadata": {
+                "description": "Email used for the administrator."
+            },
+            "type": "string"
+        },
         "apiManagementInstanceName": {
-            "type": "string",
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the API Management instance."
             },
-            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "applicationInsightsName": {
-            "type": "string",
+            "defaultValue": "ai-hybrid-multi-cloud-strategy",
             "metadata": {
                 "description": "Name of the Application Insights instance."
             },
-            "defaultValue": "ai-hybrid-multi-cloud-strategy"
-        },
-        "virtualMachineName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Application Insights instance."
-            },
-            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "functionAppName": {
-            "type": "string",
+            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the Function App."
             },
-            "defaultValue": "[concat('func-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "keyVaultName": {
-            "type": "string",
+            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "Name of the Key Vault."
             },
-            "defaultValue": "[concat('kv-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "West Europe",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "West Europe"
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
-        },
-        "adminEmail": {
-            "type": "string",
-            "metadata": {
-                "description": "Email used for the administrator."
             },
-            "defaultValue": "me@domain.com"
+            "type": "object"
+        },
+        "virtualMachineName": {
+            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "type": "string"
         }
     },
     "variables": {
@@ -273,9 +273,5 @@
                 "format": "xml"
             }
         }
-    ],
-    "outputs": {
-    },
-    "functions": [
     ]
 }

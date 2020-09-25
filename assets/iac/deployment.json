@@ -2,147 +2,147 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "serverFarmName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the server farm."
-            },
-            "defaultValue": "sf-func-hybrid-multi-cloud-strategy-1"
-        },
-        "functionAppName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Function App."
-            },
-            "defaultValue": "func-hybrid-multi-cloud-strategy-1"
-        },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Storage Account."
-            },
-            "defaultValue": "sahybridmulticloud1"
-        },
-        "sqlServerName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the SQL Server."
-            },
-            "defaultValue": "sql-hybrid-multi-cloud-strategy-1"
-        },
-        "keyVaultName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Key Vault."
-            },
-            "defaultValue": "kv-hybrid-multi-cloud-1"
-        },
-        "apiManagementInstanceName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the API Management instance which should get rights to retrieve secrets."
-            },
-            "defaultValue": "apim-hybrid-multi-cloud-strategy-1"
-        },
-        "applicationInsightsName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Application Insights instance."
-            },
-            "defaultValue": "ai-hybrid-multi-cloud-strategy-1"
-        },
-        "virtualMachineName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the Application Insights instance."
-            },
-            "defaultValue": "vm-hybrid-1"
-        },
-        "location": {
-            "type": "string",
-            "metadata": {
-                "description": "Location where we want to deploy the resource."
-            },
-            "defaultValue": "westeurope"
-        },
-        "tags": {
-            "type": "object",
-            "defaultValue": {
-                "LastModifiedDate": "[utcNow()]",
-                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
-                "Purpose": "Session"
-            }
-        },
-        "administratorUsername": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the administrator user."
-            },
-            "defaultValue": "Eldert"
-        },
-        "administratorPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Password of the administrator user."
-            }
-        },
         "adminEmail": {
-            "type": "string",
+            "defaultValue": "me@domain.com",
             "metadata": {
                 "description": "Email used for the administrator."
             },
-            "defaultValue": "me@domain.com"
-        },
-        "tenantId": {
-            "type": "string",
-            "metadata": {
-                "description": "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
-            },
-            "defaultValue": "57e893e0-396b-44c6-b6ae-532f44033433"
-        },
-        "apiManagementInstanceApiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "API version used to deploy the API Management instance."
-            },
-            "defaultValue": "2019-01-01"
-        },
-        "applicationInsightsApiVersion": {
-            "type": "string",
-            "metadata": {
-                "description": "API version used to deploy the Application Insights instance."
-            },
-            "defaultValue": "2015-05-01"
-        },
-        "networkInterfaceName": {
-            "type": "string",
-            "defaultValue": "vm-hybrid-1-866"
-        },
-        "networkSecurityGroupName": {
-            "type": "string",
-            "defaultValue": "vm-hybrid-1-nsg"
-        },
-        "virtualNetworkName": {
-            "type": "string",
-            "defaultValue": "rg-demo-azureday-poland-1-vnet"
-        },
-        "publicIpAddressName": {
-            "type": "string",
-            "defaultValue": "vm-hybrid-1-ip"
-        },
-        "adminUsername": {
-            "type": "string",
-            "defaultValue": "Eldert"
+            "type": "string"
         },
         "adminPassword": {
             "type": "securestring"
         },
+        "adminUsername": {
+            "defaultValue": "Eldert",
+            "type": "string"
+        },
+        "administratorPassword": {
+            "metadata": {
+                "description": "Password of the administrator user."
+            },
+            "type": "securestring"
+        },
+        "administratorUsername": {
+            "defaultValue": "Eldert",
+            "metadata": {
+                "description": "Name of the administrator user."
+            },
+            "type": "string"
+        },
+        "apiManagementInstanceApiVersion": {
+            "defaultValue": "2019-01-01",
+            "metadata": {
+                "description": "API version used to deploy the API Management instance."
+            },
+            "type": "string"
+        },
+        "apiManagementInstanceName": {
+            "defaultValue": "apim-hybrid-multi-cloud-strategy-1",
+            "metadata": {
+                "description": "Name of the API Management instance which should get rights to retrieve secrets."
+            },
+            "type": "string"
+        },
+        "applicationInsightsApiVersion": {
+            "defaultValue": "2015-05-01",
+            "metadata": {
+                "description": "API version used to deploy the Application Insights instance."
+            },
+            "type": "string"
+        },
+        "applicationInsightsName": {
+            "defaultValue": "ai-hybrid-multi-cloud-strategy-1",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "type": "string"
+        },
         "frontDoorName": {
-            "type": "string",
+            "defaultValue": "fd-hybrid-multi-cloud-strategy",
             "metadata": {
                 "description": "The name of the frontdoor resource."
             },
-            "defaultValue": "fd-hybrid-multi-cloud-strategy"
+            "type": "string"
+        },
+        "functionAppName": {
+            "defaultValue": "func-hybrid-multi-cloud-strategy-1",
+            "metadata": {
+                "description": "Name of the Function App."
+            },
+            "type": "string"
+        },
+        "keyVaultName": {
+            "defaultValue": "kv-hybrid-multi-cloud-1",
+            "metadata": {
+                "description": "Name of the Key Vault."
+            },
+            "type": "string"
+        },
+        "location": {
+            "defaultValue": "westeurope",
+            "metadata": {
+                "description": "Location where we want to deploy the resource."
+            },
+            "type": "string"
+        },
+        "networkInterfaceName": {
+            "defaultValue": "vm-hybrid-1-866",
+            "type": "string"
+        },
+        "networkSecurityGroupName": {
+            "defaultValue": "vm-hybrid-1-nsg",
+            "type": "string"
+        },
+        "publicIpAddressName": {
+            "defaultValue": "vm-hybrid-1-ip",
+            "type": "string"
+        },
+        "serverFarmName": {
+            "defaultValue": "sf-func-hybrid-multi-cloud-strategy-1",
+            "metadata": {
+                "description": "Name of the server farm."
+            },
+            "type": "string"
+        },
+        "sqlServerName": {
+            "defaultValue": "sql-hybrid-multi-cloud-strategy-1",
+            "metadata": {
+                "description": "Name of the SQL Server."
+            },
+            "type": "string"
+        },
+        "storageAccountName": {
+            "defaultValue": "sahybridmulticloud1",
+            "metadata": {
+                "description": "Name of the Storage Account."
+            },
+            "type": "string"
+        },
+        "tags": {
+            "defaultValue": {
+                "LastModifiedDate": "[utcNow()]",
+                "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
+                "Purpose": "Session"
+            },
+            "type": "object"
+        },
+        "tenantId": {
+            "defaultValue": "57e893e0-396b-44c6-b6ae-532f44033433",
+            "metadata": {
+                "description": "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
+            },
+            "type": "string"
+        },
+        "virtualMachineName": {
+            "defaultValue": "vm-hybrid-1",
+            "metadata": {
+                "description": "Name of the Application Insights instance."
+            },
+            "type": "string"
+        },
+        "virtualNetworkName": {
+            "defaultValue": "rg-demo-azureday-poland-1-vnet",
+            "type": "string"
         }
     },
     "variables": {
@@ -614,16 +614,16 @@
             "location": "[parameters('location')]",
             "properties": {
                 "addressSpace": {
-                    "addressPrefixes": ["10.0.1.0/24"]
+                    "addressPrefixes": [ "10.0.1.0/24" ]
                 },
                 "subnets": [
-                {
-                    "name": "default",
-                    "properties": {
-                        "addressPrefix": "10.0.1.0/24"
+                    {
+                        "name": "default",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24"
+                        }
                     }
-                }
-            ]
+                ]
             },
             "tags": "[parameters('tags')]"
         },
@@ -836,9 +836,5 @@
                 }
             }
         }
-    ],
-    "outputs": {
-    },
-    "functions": [
     ]
 }

@@ -3,29 +3,27 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "applicationInsightsName": {
-            "type": "string",
+            "defaultValue": "ai-hybrid-multi-cloud-strategy",
             "metadata": {
                 "description": "Name of the Application Insights instance."
             },
-            "defaultValue": "ai-hybrid-multi-cloud-strategy"
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
             "metadata": {
                 "description": "Location where we want to deploy the resource."
             },
-            "defaultValue": "[resourceGroup().location]"
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
+            },
+            "type": "object"
         }
-    },
-    "variables": {
     },
     "resources": [
         {
@@ -39,9 +37,5 @@
                 "Application_Type": "web"
             }
         }
-    ],
-    "outputs": {
-    },
-    "functions": [
     ]
 }

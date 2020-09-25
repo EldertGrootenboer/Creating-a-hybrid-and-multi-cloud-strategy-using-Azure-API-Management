@@ -2,41 +2,41 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "apiManagementInstanceName": {
+            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the API Management instance."
+            },
+            "type": "string"
+        },
+        "conferenceName": {
+            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "Name of the conference for which we are creating the resource."
+            },
+            "type": "string"
+        },
         "frontDoorName": {
-            "type": "string",
+            "defaultValue": "[concat('fd-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]",
             "metadata": {
                 "description": "The name of the frontdoor resource."
             },
-            "defaultValue": "[concat('fd-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
+            "type": "string"
         },
         "location": {
-            "type": "string",
+            "defaultValue": "global",
             "metadata": {
                 "description": "The location of the frontdoor resource."
             },
-            "defaultValue": "global"
+            "type": "string"
         },
         "tags": {
-            "type": "object",
             "defaultValue": {
                 "LastModifiedDate": "[utcNow()]",
                 "Project": "Creating a hybrid and multi-cloud strategy using Azure API Management",
                 "Purpose": "Session"
-            }
-        },
-        "apiManagementInstanceName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the API Management instance."
             },
-            "defaultValue": "[concat('apim-hybrid-multi-cloud-', uniqueString(resourceGroup().name))]"
-        },
-        "conferenceName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the conference for which we are creating the resource."
-            },
-            "defaultValue": "[concat('vm-', uniqueString(resourceGroup().name))]"
+            "type": "object"
         }
     },
     "variables": {
