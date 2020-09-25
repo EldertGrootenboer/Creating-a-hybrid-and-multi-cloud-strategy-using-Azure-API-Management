@@ -110,17 +110,6 @@
                     ]
                 }
             }
-        },
-        {
-            "type": "Microsoft.Web/sites/functions/keys",
-            "apiVersion": "2018-02-01",
-            "name": "[concat(parameters('functionAppName'), '/default/apimanagement')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
-            ],
-            "properties": {
-                "name": "api-management"
-            }
         }
     ]
 }
