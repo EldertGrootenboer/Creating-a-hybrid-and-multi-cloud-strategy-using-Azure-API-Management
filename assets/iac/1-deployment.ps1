@@ -18,6 +18,13 @@ Get-AzSubscription -SubscriptionName $subscriptionName | Set-AzContext
 New-AzResourceGroup -Name $resourceGroupName -Location 'West Europe' -Tag @{CreationDate=[DateTime]::UtcNow.ToString(); Project="Creating a hybrid and multi-cloud strategy using Azure API Management"; Purpose="Session"}
 New-AzResourceGroupDeployment -Name "HybridMultiCloud" -ResourceGroupName $resourceGroupName -TemplateFile "$basePath\assets\iac\azuredeploy.json" -administratorPassword $sqlAdminPassword
 
+# Deploy contents of the Function
+dotnet publish "$basePath\assets\retrieve-registration\Function.csproj" -c Release -o "$basePath\assets\retrieve-registration\publish"
+Compress-Archive -Path "$basePath\assets\retrieve-registration\publish\*" -DestinationPath "$basePath\assets\retrieve-registration\Deployment.zip"
+$functionApp = Get-AzResource -ResourceGroupName $resourceGroupName -Name func-*
+Publish-AzWebapp -ResourceGroupName $resourceGroupName -Name $functionApp.Name -ArchivePath "$basePath\assets\retrieve-registration\Deployment.zip"
+Remove-Item "$basePath\assets\retrieve-registration\Deployment.zip"
+
 # Optional for debugging, loops through each local file individually
 #Get-ChildItem "$basePath\assets\iac" -Recurse -Filter *.json | 
 #Foreach-Object {
