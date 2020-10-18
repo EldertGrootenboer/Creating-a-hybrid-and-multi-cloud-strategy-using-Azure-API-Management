@@ -3,10 +3,6 @@
 @frontDoorUrl = fd-hybrid-multi-cloud-strategy.azurefd.net
 @localhostUrl = localhost
 
-### Front Door
-GET http://{{frontDoorUrl}}/rai-demo/registrations?id=1
-Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
-
 ### API Management
 GET https://{{apiManagementUrl}}/rai-demo/registrations?id=1
 Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
@@ -28,6 +24,10 @@ Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
 
 ### Function CheckIn
 GET http://{{localhostUrl}}:7071/api/CheckIn?id=1
+
+### Front Door
+GET http://{{frontDoorUrl}}/rai-demo/registrations?id=1
+Ocp-Apim-Subscription-Key: {{Ocp-Apim-Subscription-Key}}
 
 
 
