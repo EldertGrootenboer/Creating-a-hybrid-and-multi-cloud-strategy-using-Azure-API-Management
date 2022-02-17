@@ -1,0 +1,7 @@
+{
+    "rest-client.environmentVariables": {
+        "$shared": {
+            "Ocp-Apim-Subscription-Key": "da885ee32cd84fb998e87efbbf262d18"
+        }
+    }
+}
